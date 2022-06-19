@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "calibri";
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  background: #eee;
+}
+
+.wrapper {
+  background: #fff;
+  border-radius: 5px;
+  margin: 20px 10px;
+  padding: 20px;
+}
+
+input, select {
+  outline: none;
+  border: 1px solid #ccc;
+  padding: 5px 5px;
+  border-radius: 5px;
+}
+
+#data {
+  width: 50%;
+}
+
+#data table {
+  font-size: 14px;
+  display: block;
+  max-height: 70vh;
+  overflow-y: scroll; 
+}
+
+#data table::-webkit-scrollbar {
+  width: 0px;
+}
+
+#data tr :is(th, td) {
+  width: 20%;
+  text-align: center;
+}
+
+#data td :is(input, select) {
+  width: 100%;
+}
+
+#data table td.oos {
+  background-color: rgb(255, 180, 180);
+}
+
+#chart .svgContainer {
+  padding: 10px;
+  overflow: hidden;
+}
+
+#chart svg {
+  width: 30vh;
+  height: 30vh;
+  margin: 10px;
+  overflow: visible;
+}
+
+svg#waferViewer g {
+  transform: translate(50%, 50%);
+}
+
+svg#waferViewer g.lines line {
+  fill: none;
+  stroke: rgb(0, 100, 100);
+  stroke-width: 1;
+}
+
+svg#waferViewer g.lines line.oos {
+  stroke: red;
+  stroke-width: 2;
+}
+
+svg#waferViewer g.contour circle {
+  fill: none;
+  stroke: #aaa;
+  stroke-width: 2;
+}
+
+svg#scatterViewer g {
+  transform: translate(50%, 50%);
+}
+
+svg#scatterViewer g.axis {
+  fill: none;
+  stroke: #aaa;
+  stroke-width: 2;
+}
+
+svg#scatterViewer g.circles circle {
+  fill: none;
+  stroke: rgb(0, 100, 100);
+  stroke-width: 1;
+}
+
+svg#scatterViewer g.circles circle.oos {
+  stroke: red;
+  stroke-width: 2;
+}
+
+svg#scatterViewer g.circles line {
+  stroke: #aaa;
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+svg#scatterViewer g.circles text {
+  fill: #aaa;
+  text-anchor: middle;
+}
+
+#chart .svgSetting {
+  display:flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+#chart .svgSetting span,input {
+  width: 40%;
+}
