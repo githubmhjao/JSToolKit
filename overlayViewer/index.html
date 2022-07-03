@@ -42,33 +42,37 @@
   </div>
   <div id="chart">
     <div class="wrapper">
-      <div class="svgSetting"><span>Multiplier</span><input id="multiplier" type="range" min="1" max="10"></div>
       <div class="svgContainer">
         <svg id="waferViewer">
           <g class="contour">
-            <circle cx="0" cy="0" r="50%"></circle>
+            <circle cx="50%" cy="50%" r="50%"></circle>
           </g>
           <g class="lines"></g>
         </svg>
+      </div>
+      <div class="svgSettings">
+        <div class="svgSetting"><span>Multiplier</span><input id="multiplier" type="range" min="1" max="10"></div>
       </div>
     </div>
     <div class="wrapper">
       <div class="svgContainer">
         <svg id="scatterViewer">
           <g class="axis">
-            <line x2="100%" style="transform:translate(-50%,-50%)"></line>
-            <line x2="100%" style="transform:translate(-50%,0)"></line>
-            <line x2="100%" style="transform:translate(-50%,50%)"></line>
+            <line x2="100%" style="transform:translateY(0%)"></line>
+            <line x2="100%" style="transform:translateY(50%)"></line>
+            <line x2="100%" style="transform:translateY(100%)"></line>
   
-            <line y2="100%" style="transform:translate(-50%,-50%)"></line>
-            <line y2="100%" style="transform:translate(0,-50%)"></line>
-            <line y2="100%" style="transform:translate(50%,-50%)"></line>
+            <line y2="100%" style="transform:translateX(0%)"></line>
+            <line y2="100%" style="transform:translate(50%)"></line>
+            <line y2="100%" style="transform:translate(100%)"></line>
           </g>
           <g class="circles"></g>
         </svg>
       </div>
-      <div class="svgSetting"><span>Range</span><input id="range"></div>
-      <div class="svgSetting"><span>Tick</span><input id="tick"></div>
+      <div class="svgSettings">
+        <div class="svgSetting"><span>Range</span><input id="range"></div>
+        <div class="svgSetting"><span>Tick</span><input id="tick"></div>
+      </div>
     </div>
   </div>
 
