@@ -16,6 +16,7 @@ body {
   border-radius: 5px;
   margin: 20px 10px;
   padding: 20px;
+  text-align: center;
 }
 
 input, select {
@@ -23,10 +24,6 @@ input, select {
   border: 1px solid #ccc;
   padding: 5px 5px;
   border-radius: 5px;
-}
-
-#data {
-  width: 50%;
 }
 
 #data table {
@@ -58,15 +55,15 @@ input, select {
   overflow: hidden;
 }
 
+#chart {
+  max-width: min-content;
+}
+
 #chart svg {
   width: 30vh;
   height: 30vh;
   margin: 10px;
   overflow: visible;
-}
-
-svg#waferViewer g {
-  transform: translate(50%, 50%);
 }
 
 svg#waferViewer g.lines line {
@@ -84,10 +81,6 @@ svg#waferViewer g.contour circle {
   fill: none;
   stroke: #aaa;
   stroke-width: 2;
-}
-
-svg#scatterViewer g {
-  transform: translate(50%, 50%);
 }
 
 svg#scatterViewer g.axis {
@@ -118,12 +111,18 @@ svg#scatterViewer g.circles text {
   text-anchor: middle;
 }
 
-#chart .svgSetting {
+#chart .svgSettings {
   display:flex;
   align-items: center;
-  margin-bottom: 5px;
+}
+
+#chart .svgSetting {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 5px;
 }
 
 #chart .svgSetting span,input {
-  width: 40%;
+  width: 100%;
 }
