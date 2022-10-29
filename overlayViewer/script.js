@@ -1,235 +1,329 @@
-// declare file related data
-let file = {
-  dataObj: {},
-  option: [{}, {}, {}] 
+// input csv file should obey this index
+const arrayIdx = {
+  "wafer-id": 0,
+  "pos-x": 1,
+  "pos-y": 2,
+  "ovl-x": 3,
+  "ovl-y": 4,
+  "label": 5
 };
 
-// declare state
-let state = {
-  waferId: undefined, 
-  xTargetLabel: undefined, 
-  yTargetLabel: undefined, 
-  xSpec: undefined, 
-  ySpec: undefined,
-  multiplier: 1,
-  range: 4, 
-  tick: 2
+const file = {
+  dataObj: undefined,
+  dataArray: undefined,
+  filterArray: undefined
 };
 
-const physicalConstant = 300;
+const state = {
+  "wafer-id": undefined,
+  "label-x": undefined,
+  "label-y": undefined,
+  "spc-x": "",
+  "spc-y": "",
+  "wafer-map-scale": 1,
+  "scatter-map-range": 4,
+  "scatter-map-tick": 1
+};
 
-document.getElementById("file").addEventListener("change", handleFile);
+document.getElementById("input-file").addEventListener("change", handleFile);
 
-Object.keys(state).forEach(k => {
-  document.getElementById(k).addEventListener("change", handleChange)
+document.querySelector(".wrapper.load button").addEventListener("click", () => {
+  document.getElementById("input-file").click();
 });
 
-function handleChange(e) {
-  state[e.target.id] = e.target.value;
-  handleState();
-}
+["wafer-map", "scatter-map"].forEach(i => {
+  document.getElementById(`btn-${i}`).addEventListener("click", () => downloadSVGAsPNG(i, `${i}-${state["wafer-id"]}`))
+});
+
+Object.keys(state).forEach(key => {
+  document.getElementById(key).addEventListener("change", handleState);
+});
 
 function handleState() {
-  handleTable();
-  handleWaferViewer();
-  handleScatterViewer();  
+  Object.keys(state).forEach(key => {
+    state[key] = document.getElementById(key).value
+  })
+  console.log(state);
+  if (file.dataObj) {
+    handleTable();
+    handleWafer();
+    handleScatter();
+  }
 }
 
-function createRelocate(physicalLocation, clientLocation, scale) {
-  return (p) => (p - physicalLocation) * scale + clientLocation;
+const primary = window.getComputedStyle(document.documentElement).getPropertyValue("--color-primary");
+const secondary = window.getComputedStyle(document.documentElement).getPropertyValue("--color-secondary");
+const danger = window.getComputedStyle(document.documentElement).getPropertyValue("--color-danger");
+
+const physicalDimension = 300;
+
+function createRelocate(physicalStart, physicalEnd, clientStart, clientEnd) {
+  const scale = (clientEnd - clientStart) / (physicalEnd - physicalStart);
+  return p => (p - physicalStart) * scale + clientStart;
 }
 
-function handleScatterViewer() {
-  const svg = document.getElementById("scatterViewer");
+function handleOOS() {
+  document.getElementById("svg-oos-x");
+}
+
+function handleScatter() {
+  const svg = document.getElementById("scatter-map");
   const svgNS = svg.namespaceURI;
-  const size = svg.clientHeight;
-  const {range, tick} = state;
+  const relocateX = createRelocate(0, +state["scatter-map-range"], 0.5, 0.9);
+  const relocateY = createRelocate(0, +state["scatter-map-range"], 0.5, 0.1);
+
+  const scatters = document.querySelector("#scatter-map g.scatters");
+  const ticks = document.querySelector("#scatter-map g.ticks");
+  const texts = document.querySelector("#scatter-map g.texts");
+  scatters.textContent = "";
+  ticks.textContent = "";
+  texts.textContent = "";
+
+  scatters.style.stroke = primary;
+  scatters.style.fill = primary;
+
+  ticks.style.stroke = secondary;
+
+  const waferId = state["wafer-id"];
+  const labelX = state["label-x"];
+  const labelY = state["label-y"];
+  const range = +state["scatter-map-range"];
+  const tick = +state["scatter-map-tick"];
   const count = Math.floor(range / tick);
 
-  const circles = svg.querySelector(".circles");
-  circles.textContent = "";
-  
-  const dataObj = file.dataObj;
-  const relocateX = createRelocate(0, size/2, size/range/2);
-  const relocateY = createRelocate(0, size/2, -size/range/2);
-
-  Object.keys(dataObj[state.waferId]).forEach(p => {
-    const circle = document.createElementNS(svgNS, "circle");
-    const xOVL = dataObj[state.waferId][p]["x"][state.xTargetLabel];
-    const yOVL = dataObj[state.waferId][p]["y"][state.yTargetLabel];
-    if (xOVL !== undefined && yOVL !== undefined) {
-      const cx = relocateX(+xOVL);
-      const cy = relocateY(+yOVL);
-      const r = 2;
-  
-      Object.entries({cx, cy, r}).forEach(([key, value]) => {
-        circle.setAttribute(key, value)
-      });
-  
-      +state.xSpec && Math.abs(+xOVL) > +state.xSpec && circle.classList.add("oos");
-      +state.ySpec && Math.abs(+yOVL) > +state.ySpec && circle.classList.add("oos");
-  
-      circles.appendChild(circle);
-    }
-  });
-
-  [...Array(count)].forEach((_, i) => {
+  [...Array(count)].map((_, i) => {
     [+1, -1].forEach(sign => {
-      const tickPosition = sign * (i + 1) * tick;
-  
-      const lineH = document.createElementNS(svgNS, "line");
-      lineH.setAttribute("x2", "100%");
-      lineH.setAttribute("style", `transform:translateY(${relocateY(tickPosition)}px)`);
-      circles.appendChild(lineH);
-  
-      const lineV = document.createElementNS(svgNS, "line");
-      lineV.setAttribute("y2", "100%");
-      lineV.setAttribute("style", `transform:translateX(${relocateX(tickPosition)}px)`);
-      circles.appendChild(lineV);
+      const tickH = document.createElementNS(svgNS, "line");
+      tickH.setAttribute("x1", "10%");
+      tickH.setAttribute("x2", "90%");
+      tickH.setAttribute("y1", relocateY(sign * tick * (i+1)) * 100 + "%");
+      tickH.setAttribute("y2", relocateY(sign * tick * (i+1)) * 100 + "%");
+      ticks.appendChild(tickH);
 
-      const textH = document.createElementNS(svgNS, "text");
-      textH.setAttribute("x", "-5%");
-      textH.setAttribute("y", "0");
-      textH.setAttribute("style", `transform:translateY(${relocateY(tickPosition)}px)`);
-      textH.textContent = sign * (i + 1) * tick;
-      circles.appendChild(textH);
-
-      const textV = document.createElementNS(svgNS, "text");
-      textV.setAttribute("x", "0");
-      textV.setAttribute("y", "105%");
-      textV.setAttribute("style", `transform:translateX(${relocateX(tickPosition)}px)`);
-      textV.textContent = sign * (i + 1) * tick;
-      circles.appendChild(textV);
-    })
+      const text = document.createElementNS(svgNS, "text");
+      text.setAttribute("y", relocateX(sign * tick * (i+1)) * 100 + "%");
+      text.setAttribute("x", "5%");
+      text.textContent = sign * tick * (i+1);
+      texts.appendChild(text);
+    });
   });
 
-  ["range", "tick"].forEach(s => {
-    document.getElementById(s).value = state[s];
+  [...Array(count)].map((_, i) => {
+    [+1, -1].forEach(sign => {
+      const tickV = document.createElementNS(svgNS, "line");
+      tickV.setAttribute("y1", "10%");
+      tickV.setAttribute("y2", "90%");
+      tickV.setAttribute("x1", relocateX(sign * tick * (i+1)) * 100 + "%");
+      tickV.setAttribute("x2", relocateX(sign * tick * (i+1)) * 100 + "%");
+      ticks.appendChild(tickV);
+
+      const text = document.createElementNS(svgNS, "text");
+      text.setAttribute("x", relocateX(sign * tick * (i+1)) * 100 + "%");
+      text.setAttribute("y", "95%");
+      text.textContent = sign * tick * (i+1);
+      texts.appendChild(text);
+    });
+  });
+
+  Object.values(file.dataObj[waferId]).forEach(valueObj => {
+    if (valueObj.x[labelX] !== undefined && valueObj.y[labelY] !== undefined) {
+      const scatter = document.createElementNS(svgNS, "circle");
+      const cx = relocateX(+valueObj.x[labelX]) * 100 + "%";
+      const cy = relocateY(+valueObj.y[labelY]) * 100 + "%";
+      const r = "1%";
+
+      Object.entries({cx, cy, r}).forEach(([key, value]) => {
+        scatter.setAttribute(key, value);
+      })
+
+      const spcX = state["spc-x"] === "" ? Infinity : +state["spc-x"];
+      const spcY = state["spc-y"] === "" ? Infinity : +state["spc-y"];
+
+      if (Math.abs(+valueObj.x[labelX]) > spcX || Math.abs(+valueObj.y[labelY]) > spcY) {
+        scatter.style.stroke = danger;
+        scatter.style.fill = danger;
+      }
+      scatters.appendChild(scatter);
+    }
   })
 }
 
-function handleWaferViewer() {
-  const svg = document.getElementById("waferViewer");
+function handleWafer() {
+  const svg = document.getElementById("wafer-map");
   const svgNS = svg.namespaceURI;
-  const size = svg.clientHeight;
-  const lines = svg.querySelector(".lines");
-  lines.textContent = "";
-  const dataObj = file.dataObj;
-  const relocateX = createRelocate(0, size/2, size/physicalConstant);
-  const relocateY = createRelocate(0, size/2, -size/physicalConstant);
-  Object.keys(dataObj[state.waferId]).forEach(p => {
-    const line = document.createElementNS(svgNS, "line");
-    const [x1, y1] = p.split(",");
-    const xOVL = dataObj[state.waferId][p]["x"][state.xTargetLabel];
-    const yOVL = dataObj[state.waferId][p]["y"][state.yTargetLabel];
-    if (xOVL !== undefined && yOVL !== undefined) {
-      const x2 = +x1 + +xOVL * state.multiplier;
-      const y2 = +y1 + +yOVL * state.multiplier;
+  const relocateX = createRelocate(0, physicalDimension / 2, 0.5, 1);
+  const relocateY = createRelocate(0, physicalDimension / 2, 0.5, 0);
 
-      [{x1, y1}, {x2, y2}].forEach(p => {
-        line.setAttribute(Object.keys(p)[0], relocateX(+Object.values(p)[0]));
-        line.setAttribute(Object.keys(p)[1], relocateY(+Object.values(p)[1]));
+  const lines = document.querySelector("#wafer-map g.lines");
+  lines.textContent = "";
+  lines.style.stroke = primary;
+
+  const waferId = state["wafer-id"];
+  const labelX = state["label-x"];
+  const labelY = state["label-y"];
+
+  Object.entries(file.dataObj[waferId]).forEach(([p, valueObj]) => {
+    if (valueObj.x[labelX] !== undefined && valueObj.y[labelY] !== undefined) {
+      const line = document.createElementNS(svgNS, "line");
+      const x1 = relocateX(+p.split(",")[0]);
+      const y1 = relocateY(+p.split(",")[1]);
+      const x2 = x1 + +valueObj.x[labelX] * state["wafer-map-scale"] * 0.01;
+      const y2 = y1 + +valueObj.y[labelY] * state["wafer-map-scale"] * 0.01;
+      
+      Object.entries({x1, y1, x2, y2}).forEach(([key, value]) => {
+        line.setAttribute(key, value * 100 + "%");
       })
-  
-      +state.xSpec && Math.abs(+xOVL) > +state.xSpec && line.classList.add("oos");
-      +state.ySpec && Math.abs(+yOVL) > +state.ySpec && line.classList.add("oos");
-  
+
+      const spcX = state["spc-x"] === "" ? Infinity : +state["spc-x"];
+      const spcY = state["spc-y"] === "" ? Infinity : +state["spc-y"];
+
+      if (Math.abs(+valueObj.x[labelX]) > spcX || Math.abs(+valueObj.y[labelY]) >spcY) {
+        line.style.stroke = danger;
+      }
       lines.appendChild(line);
     }
-  });
-  
-  ["multiplier"].forEach(s => {
-    document.getElementById(s).value = state[s];
-  });
+  })
 }
 
 function handleTable() {
-  const tbody = document.getElementById("data").querySelector("tbody");
-  Array.prototype.slice.call(tbody.querySelectorAll("tr"), 3).forEach(el => {
-    tbody.removeChild(el);
+  const table = document.querySelector("table tbody");
+  table.textContent = "";
+
+  const waferId = state["wafer-id"];
+  const labelX = state["label-x"];
+  const labelY = state["label-y"];
+
+  Object.entries(file.dataObj[waferId]).forEach(([p, valueObj]) => {
+    if (valueObj.x[labelX] !== undefined && valueObj.y[labelY] !== undefined) {
+      const row = document.createElement("tr");
+        
+      [waferId, p.split(",")[0], p.split(",")[1], valueObj.x[labelX], valueObj.y[labelY]].forEach((c, i) => {
+        const col = document.createElement("td");
+        col.textContent = i > 0 ? c.slice(0, 5) : c;
+        state["spc-x"] !== "" && i === 3 && +state["spc-x"] < Math.abs(+c) && (col.classList.add("oos"), col.classList.add("oos-x"));
+        state["spc-y"] !== "" && i === 4 && +state["spc-y"] < Math.abs(+c) && (col.classList.add("oos"), col.classList.add("oos-y"));
+        row.appendChild(col);
+      })
+  
+      table.appendChild(row);
+    }
   });
 
-  console.log(state);
+  ["oos-x", "oos-y"].forEach(item => {
+    const oosCount = +document.querySelectorAll("tbody td." + item).length;
+    const totalCount = +document.querySelectorAll("tbody tr").length;
+    const percentage = oosCount / totalCount * 100;
 
-  Object.keys(file.dataObj[state.waferId]).forEach(p => {
-    const tr = document.createElement("tr");
-    const waferId = state.waferId;
-    const [xPos, yPos] = p.split(",");
-    const xOvl = file.dataObj[waferId][p]["x"][state.xTargetLabel];
-    const yOvl = file.dataObj[waferId][p]["y"][state.yTargetLabel];
-    if (xOvl !== undefined && yOvl !== undefined) {
-      [waferId, xPos, yPos, xOvl, yOvl].forEach((c, i) => {
-        const td = document.createElement("td");
-        td.textContent = (i > 2) ? c.slice(0, 4) : c;
-        +state.xSpec && i === 3 && Math.abs(+xOvl) > +state.xSpec && td.classList.add("oos");
-        +state.ySpec && i === 4 && Math.abs(+yOvl) > +state.ySpec && td.classList.add("oos");
-        tr.appendChild(td);
-      })
-      tbody.appendChild(tr);
-    }
+    const textTotal = document.createElement("div");
+    const oosTotal = document.createElement("div");
+    const info = document.getElementById(item);
+    const span = document.querySelector(`.wrapper.${item} .svg-container-small div span`);
+
+    textTotal.textContent = `Total: ${totalCount}`;
+    oosTotal.textContent = `OOS Count: ${oosCount}`;
+    info.textContent = ""
+    info.appendChild(textTotal);
+    info.appendChild(oosTotal);
+
+    const circle = document.getElementById("svg-"+item);
+    const c = 2 * Math.PI* (+circle.getAttribute("r").slice(0, -1));
+    circle.style.strokeDasharray = c + "%";
+    circle.style.strokeDashoffset = - percentage * 0.01 * c + "%";
+
+    span.textContent = Math.floor(percentage) + "%";
   })
 }
 
 function handleFile(e) {
   const csvFile = e.target.files[0];
   const fileReader = new FileReader();
-  
-  function handleArray(arr) {
-    const obj = {};
-    const opt = [{}, {}, {}];
-    arr.forEach(r => {
-      const waferId = r[0];
-      const pos = `${r[1]},${r[2]}`;
-      const [xOvl, yOvl] = [r[3], r[4]];
-      const targetLabel = r[5];
 
-      obj[waferId] ??= {};
-      obj[waferId][pos] ??= {"x": {}, "y": {}};
-      obj[waferId][pos]["x"][targetLabel] = xOvl;
-      obj[waferId][pos]["y"][targetLabel] = yOvl;
+  function handleOption() {
+    const waferIds = new Set(file.dataArray.map(r => r[arrayIdx["wafer-id"]]));
+    const labels = new Set(file.dataArray.map(r => r[arrayIdx["label"]]));
 
-      opt[0].hasOwnProperty(waferId) || (opt[0][waferId] = true);
-      opt[1].hasOwnProperty(targetLabel) || (opt[1][targetLabel] = true);
-      opt[2].hasOwnProperty(targetLabel) || (opt[2][targetLabel] = true);
-    })
-    return [obj, opt]
-  }
+    const selectElements = {
+      "wafer-id": waferIds,
+      "label-x": labels,
+      "label-y": labels
+    };
 
-  function handleOption(opt) {
-    const waferIdSel = document.getElementById("waferId");
-    const xTargetLabelSel = document.getElementById("xTargetLabel");
-    const yTargetLabelSel = document.getElementById("yTargetLabel");
-
-    [waferIdSel, xTargetLabelSel, yTargetLabelSel].forEach((el, i) => {
-      el.textContent = "";
-      Object.keys(opt[i]).forEach((o, order) => {
+    Object.entries(selectElements).forEach(([key, value]) => {
+      const selectElement = document.getElementById(key);
+      selectElement.textContent = "";
+      value.forEach((o, i) => {
         const optionElement = document.createElement("option");
         optionElement.textContent = o;
-        el.appendChild(optionElement);
-        order === 0 && (el.value = o);
+        selectElement.appendChild(optionElement);
+        i === 0 && (selectElement.value = o);
       })
+    });
+  }
+
+  function handleInitialValue() {
+    Object.entries(state).forEach(([key, value]) => {
+      if (!document.getElementById(key).value) {
+        document.getElementById(key).value = value;
+      };
     })
   }
 
   fileReader.addEventListener("load", (e) => {
     const text = e.target.result;
     const rows = text.split("\r\n").slice(1, -1);
-    const array = rows.map(r => r.split(","));
-    const [obj, option] = handleArray(array);
-    file.dataObj = obj;
-    file.option = option;
-    
-    handleOption(option);
-    ["waferId", "xTargetLabel", "yTargetLabel"].forEach((s, i) => {
-      state[s] = document.getElementById(s).value;
+    const dataArray = rows.map(r => r.split(","));
+
+    // arr to object
+    const dataObj = {};
+    dataArray.forEach(r => {
+      const waferId = r[arrayIdx["wafer-id"]];
+      const posX = +r[arrayIdx["pos-x"]];
+      const posY = +r[arrayIdx["pos-y"]];
+      const pos = `${posX},${posY}`;
+      const label = r[arrayIdx["label"]];
+      dataObj[waferId] ?? (dataObj[waferId] = {});
+      dataObj[waferId][pos] ?? (dataObj[waferId][pos] = {x: {}, y: {}});
+      dataObj[waferId][pos]["x"][label] = r[arrayIdx["ovl-x"]];
+      dataObj[waferId][pos]["y"][label] = r[arrayIdx["ovl-y"]];
     });
 
+    file.dataArray = dataArray;
+    file.dataObj = dataObj;
+
+    handleOption();
+    handleInitialValue();
     handleState();
-  })
+  });
 
-  if (csvFile) {
-    fileReader.readAsText(csvFile);
-  }
+  if (csvFile) fileReader.readAsText(csvFile);
 
+  document.getElementById("file-name").textContent = csvFile.name;
+  console.log(csvFile);
   e.target.value = "";
+}
+
+function downloadSVGAsPNG(svgId, name){
+  const canvas = document.createElement("canvas");
+  const svg = document.getElementById(svgId);
+  const base64doc = btoa(unescape(encodeURIComponent(svg.outerHTML)));
+  const w = 1000;
+  const h = 1000;
+  const img_to_download = document.createElement('img');
+  img_to_download.src = 'data:image/svg+xml;base64,' + base64doc;
+  img_to_download.onload = function () {
+    canvas.setAttribute('width', w);
+    canvas.setAttribute('height', h);
+    const context = canvas.getContext("2d");
+    context.drawImage(img_to_download,0,0,w,h);
+    const dataURL = canvas.toDataURL('image/png');
+    if (window.navigator.msSaveBlob) {
+      window.navigator.msSaveBlob(canvas.msToBlob(), name + ".png");
+      e.preventDefault();
+    } else {
+      const a = document.createElement('a');
+      a.download = name + ".png";
+      a.href = dataURL;
+      a.click();
+    }
+  }  
 }
