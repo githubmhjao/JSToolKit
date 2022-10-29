@@ -8,13 +8,97 @@
   <title>Overlay Viewer</title>
 </head>
 <body>
-  <div id="data">
-    <div class="wrapper">
-      <input id="file" type="file">
+  <div class="container">
+    <div class="wrapper load">
+      <div class="intro-box">
+        <div class="intro">1</div>
+        <h1>Load File</h1>
+      </div>
+      <h2>File Name: <span id="file-name">none</span></h2>
+      <input type="file" id="input-file">
+      <button>Load File</button>
     </div>
-    <div class="wrapper">
+    <div class="wrapper wafer-map">
+      <h1>Wafer Map</h1>
+      <div class="svg-container">
+        <svg id="wafer-map" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <circle cx="50%" cy="50%" r="48%" style="stroke: #ddd; stroke-width: 1%; fill: none"></circle>
+          <g class="lines" style="stroke-width: 0.5%;"></g>
+        </svg>
+      </div>
+      <div class="intro-box">
+        <div class="intro">2</div>
+        <div class="svg-setting">
+          <div>
+            <label for="wafer-map-scale">Scale</label><input type="text" id="wafer-map-scale">
+          </div>
+        </div>
+      </div>
+      <button id="btn-wafer-map">Download Image</button>
+    </div>
+    <div class="wrapper scatter-map">
+      <h1>Scatter Map</h1>
+      <div class="svg-container">
+        <svg id="scatter-map" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <g class="axis" style="stroke: #ddd; stroke-width: 1%">
+            <line x1="10%" x2="90%" y1="10%" y2="10%"></line>
+            <line x1="10%" x2="90%" y1="50%" y2="50%"></line>
+            <line x1="10%" x2="90%" y1="90%" y2="90%"></line>
+            <line y1="10%" y2="90%" x1="10%" x2="10%"></line>
+            <line y1="10%" y2="90%" x1="50%" x2="50%"></line>
+            <line y1="10%" y2="90%" x1="90%" x2="90%"></line>
+          </g>
+          <g class="ticks" style="stroke-width: 0.5%; stroke-dasharray: 4"></g>
+          <g class="texts" style="font-size: 1em; text-anchor: middle; dominant-baseline: middle"></g>
+          <g class="scatters" style="stroke-width: 0.5%;"></g>
+        </svg>
+      </div>
+      <div class="intro-box">
+        <div class="intro">3</div>
+        <div class="svg-setting">
+          <div>
+            <label for="scatter-map-range">Range</label><input type="text" id="scatter-map-range">
+          </div>
+          <div>
+            <label for="scatter-map-tick">Tick</label><input type="text" id="scatter-map-tick">
+          </div>
+        </div>
+      </div>
+      <button id="btn-scatter-map">Download Image</button>
+    </div>
+    <div class="wrapper oos-x">
+      <h2>X OOS</h2>
+      <div class="svg-container-small">
+        <svg>
+          <circle cx="50%" cy="50%" r="40%" style="stroke-width: 10%; fill: none"></circle>
+          <circle id="svg-oos-x" cx="50%" cy="50%" r="40%" style="stroke: #ddd; stroke-width: 10%; fill: none"></circle>
+        </svg>
+        <div class="percentage"><span></span></div>
+      </div>
+      <div class="info" id="oos-x"></div>
+    </div>
+    <div class="wrapper oos-y">
+      <h2>Y OOS</h2>
+      <div class="svg-container-small">
+        <svg>
+          <circle cx="50%" cy="50%" r="40%" style="stroke-width: 10%; fill: none"></circle>
+          <circle id="svg-oos-y" cx="50%" cy="50%" r="40%" style="stroke: #ddd; stroke-width: 10%; fill: none"></circle>
+        </svg>
+        <div class="percentage"><span></span></div>
+      </div>
+      <div class="info" id="oos-y"></div>
+    </div>
+    <div class="wrapper data">
+      <h1>Overlay Data</h1>
       <table>
-        <tbody>
+        <thead>
+          <tr>
+            <th><div class="intro-box"><div class="intro">4</div></div></th>
+            <th></th>
+            <th></th>
+            <th><div class="intro-box"><div class="intro">5</div></div></th>
+            <th><div class="intro-box"><div class="intro">6</div></div></th>
+          </tr>
           <tr>
             <th>Wafer Id</th>
             <th>Position X</th>
@@ -23,59 +107,30 @@
             <th>OVL Y</th>
           </tr>
           <tr>
-            <td><select id="waferId"><option>--</option></select></td>
-            <td></td>
-            <td></td>
-            <td><select id="xTargetLabel"><option>--</option></select></td>
-            <td><select id="yTargetLabel"><option>--</option></select></td>
+            <th><select id="wafer-id">
+              <option value="---">---</option>
+            </select></th>
+            <th></th>
+            <th></th>
+            <th><select id="label-x">
+              <option value="---">---</option>
+            </select></th>
+            <th><select id="label-y">
+              <option value="---">---</option>
+            </select></th>
           </tr>
           <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td><input id="xSpec"></td>
-            <td><input id="ySpec"></td>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th><input type="text" placeholder="SPC X" id="spc-x"></th>
+            <th><input type="text" placeholder="SPC Y" id="spc-y"></th>
           </tr>
-        </tbody>
+        </thead>
+        <tbody></tbody>
       </table>
     </div>
   </div>
-  <div id="chart">
-    <div class="wrapper">
-      <div class="svgContainer">
-        <svg id="waferViewer">
-          <g class="contour">
-            <circle cx="50%" cy="50%" r="50%"></circle>
-          </g>
-          <g class="lines"></g>
-        </svg>
-      </div>
-      <div class="svgSettings">
-        <div class="svgSetting"><span>Multiplier</span><input id="multiplier" type="range" min="1" max="10"></div>
-      </div>
-    </div>
-    <div class="wrapper">
-      <div class="svgContainer">
-        <svg id="scatterViewer">
-          <g class="axis">
-            <line x2="100%" style="transform:translateY(0%)"></line>
-            <line x2="100%" style="transform:translateY(50%)"></line>
-            <line x2="100%" style="transform:translateY(100%)"></line>
-  
-            <line y2="100%" style="transform:translateX(0%)"></line>
-            <line y2="100%" style="transform:translate(50%)"></line>
-            <line y2="100%" style="transform:translate(100%)"></line>
-          </g>
-          <g class="circles"></g>
-        </svg>
-      </div>
-      <div class="svgSettings">
-        <div class="svgSetting"><span>Range</span><input id="range"></div>
-        <div class="svgSetting"><span>Tick</span><input id="tick"></div>
-      </div>
-    </div>
-  </div>
-
   <script src="script.js"></script>
 </body>
 </html>
