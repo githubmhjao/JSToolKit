@@ -1,128 +1,173 @@
-* {
+:root {
+  --color-primary: green;
+  --color-secondary: #ddd;
+  --color-danger: red;
+  --color-danger-background: #faa;
+}
+
+*{
   margin: 0;
   padding: 0;
+  outline: 0;
+  border: 0;
+  text-decoration: none;
+  list-style: none;
   box-sizing: border-box;
-  font-family: "calibri";
+  font-family: calibri, sans-serif;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  background: #eee;
-}
-
-.wrapper {
-  background: #fff;
-  border-radius: 5px;
-  margin: 20px 10px;
-  padding: 20px;
-  text-align: center;
+  background: #f6f6f6;
 }
 
 input, select {
-  outline: none;
+  width: 100%;
+  height: 1.5rem;
+  text-align: center;
   border: 1px solid #ccc;
-  padding: 5px 5px;
-  border-radius: 5px;
+  border-radius: 0.2rem;
 }
 
-#data table {
-  font-size: 14px;
-  display: block;
-  max-height: 70vh;
-  overflow-y: scroll; 
+.container {
+  margin: 1rem auto;
+  width: 96vw;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas: 
+    "one one one"
+    "two three four"
+    "two three five"
+    "six six six"
+  ;
+  gap: 1rem;
+  justify-content: space-between;
 }
 
-#data table::-webkit-scrollbar {
-  width: 0px;
-}
-
-#data tr :is(th, td) {
-  width: 20%;
+.wrapper {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #fff;
   text-align: center;
 }
 
-#data td :is(input, select) {
-  width: 100%;
+.wrapper.load {
+  grid-area: one;
+  text-align: left;
 }
 
-#data table td.oos {
-  background-color: rgb(255, 180, 180);
+.wrapper.wafer-map {
+  grid-area: two;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-#chart .svgContainer {
-  padding: 10px;
-  overflow: hidden;
+.wrapper.scatter-map {
+  grid-area: three;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-#chart {
-  max-width: min-content;
+.wrapper.oos-x {
+  grid-area: four;
 }
 
-#chart svg {
-  width: 30vh;
-  height: 30vh;
-  margin: 10px;
-  overflow: visible;
+.wrapper.oos-y {
+  grid-area: five;
 }
 
-svg#waferViewer g.lines line {
-  fill: none;
-  stroke: rgb(0, 100, 100);
-  stroke-width: 1;
+.wrapper.data {
+  grid-area: six;
 }
 
-svg#waferViewer g.lines line.oos {
-  stroke: red;
-  stroke-width: 2;
-}
-
-svg#waferViewer g.contour circle {
-  fill: none;
-  stroke: #aaa;
-  stroke-width: 2;
-}
-
-svg#scatterViewer g.axis {
-  fill: none;
-  stroke: #aaa;
-  stroke-width: 2;
-}
-
-svg#scatterViewer g.circles circle {
-  fill: none;
-  stroke: rgb(0, 100, 100);
-  stroke-width: 1;
-}
-
-svg#scatterViewer g.circles circle.oos {
-  stroke: red;
-  stroke-width: 2;
-}
-
-svg#scatterViewer g.circles line {
-  stroke: #aaa;
-  stroke-width: 1;
-  stroke-dasharray: 2 2;
-}
-
-svg#scatterViewer g.circles text {
-  fill: #aaa;
-  text-anchor: middle;
-}
-
-#chart .svgSettings {
-  display:flex;
-  align-items: center;
-}
-
-#chart .svgSetting {
-  width: 100%;
+.intro-box {
   display: flex;
   align-items: center;
-  padding: 0 5px;
+  gap: 1rem;
 }
 
-#chart .svgSetting span,input {
+.intro {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  background: var(--color-primary);
+  width: 3vw;
+  height: 3vw;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 3vw;
+}
+
+.wrapper.load input {
+  display: none;
+}
+
+button {
   width: 100%;
+  padding: 0.2rem;
+  font-size: 1.2rem;
+  border-radius: 0.2rem;
+  color: white;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+.svg-container svg {
+  width: 25vw;
+  height: 25vw;
+}
+
+.svg-container-small {
+  position: relative;
+}
+
+.svg-container-small svg {
+  width: 10vw;
+  height: 10vw;
+}
+
+.svg-container-small .percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.svg-container-small svg circle:nth-child(1) {
+  stroke: var(--color-primary);
+}
+
+.svg-setting {
+  margin-bottom: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.2rem;
+}
+
+.svg-setting > div {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+
+.svg-setting > div > label {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+table {
+  width: 100%;
+}
+
+table :where(thead, tbody) tr {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+table :where(thead, tbody) td {
+  text-align: center;
+}
+
+td.oos {
+  background: var(--color-danger-background);
 }
