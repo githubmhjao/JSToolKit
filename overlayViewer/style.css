@@ -20,154 +20,143 @@ body {
   background: #f6f6f6;
 }
 
-input, select {
-  width: 100%;
-  height: 1.5rem;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 0.2rem;
-}
-
 .container {
-  margin: 1rem auto;
-  width: 96vw;
+  width: 100%;
+  min-height: 100vh;
+  padding: 1rem;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-areas: 
-    "one one one"
-    "two three four"
-    "two three five"
-    "six six six"
-  ;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-areas:
+    "one two three four"
+    "one two three five"
+    "six six six six";
   gap: 1rem;
   justify-content: space-between;
 }
 
-.wrapper {
-  padding: 1rem;
-  border-radius: 0.5rem;
+@media (max-width: 700px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      "one one"
+      "two three"
+      "two three"
+      "four five"
+      "four five"
+      "six six";
+  }
+}
+
+.card {
   background: #fff;
-  text-align: center;
+  padding: 1rem;
+  min-width: 300px;
 }
 
-.wrapper.load {
+.card.input {
   grid-area: one;
-  text-align: left;
 }
 
-.wrapper.wafer-map {
+.card.wafer {
   grid-area: two;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
-.wrapper.scatter-map {
+.card.bull {
   grid-area: three;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
-.wrapper.oos-x {
+.card.oos-x {
   grid-area: four;
 }
 
-.wrapper.oos-y {
+.card.oos-y {
   grid-area: five;
 }
 
-.wrapper.data {
+.card.detail {
   grid-area: six;
 }
 
-.intro-box {
-  display: flex;
+.card div.input {
+  margin: 5px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  column-gap: 0.5rem;
   align-items: center;
-  gap: 1rem;
 }
 
-.intro {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-  background: var(--color-primary);
-  width: 3vw;
-  height: 3vw;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 3vw;
-}
-
-.wrapper.load input {
-  display: none;
-}
-
-button {
-  width: 100%;
-  padding: 0.2rem;
+.card div.input label {
   font-size: 1.2rem;
-  border-radius: 0.2rem;
-  color: white;
+  color: #fff;
   background: var(--color-primary);
-  cursor: pointer;
+  padding: 5px;
+  border-radius: 0.2rem;
 }
 
-.svg-container svg {
-  width: 25vw;
-  height: 25vw;
+.card div.input input,
+.card div.input select {
+  width: 100%;
+  font-size: 1.2rem;
+  border: 2px solid var(--color-secondary);
+  border-radius: 0.1rem;
+  padding: 0 5px;
 }
 
-.svg-container-small {
-  position: relative;
+.card-small {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 }
 
 .svg-container-small svg {
-  width: 10vw;
-  height: 10vw;
+  width: 100px;
+  height: 100px;
 }
 
-.svg-container-small .percentage {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.svg-container-small svg circle:nth-child(1) {
-  stroke: var(--color-primary);
-}
-
-.svg-setting {
-  margin-bottom: 0.5rem;
+.card div.input-small {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 0.2rem;
+  grid-template-columns: 2fr 1fr;
+  margin: 5px;
 }
 
-.svg-setting > div {
-  display: grid;
-  grid-template-columns: 40% 60%;
+.card div.input-small label {
+  font-weight: 1000;
+  margin: 2px 0;
+  padding: 2px 0;
 }
 
-.svg-setting > div > label {
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-table {
+.card div.input-small input {
   width: 100%;
+  padding: 5px;
+  border: 1px solid var(--color-secondary);
 }
 
-table :where(thead, tbody) tr {
+#input-file {
+  display: none;
+}
+
+.svg-container {
+  display: flex;
+  justify-content: center;
+}
+
+.svg-container svg {
+  width: 280px;
+  height: 280px;
+}
+
+.card.detail .table-title {
+  background: var(--color-secondary);
+  padding: 5px 0;
+}
+
+.card.detail .row {
+  font-size: 1.2rem;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-}
-
-table :where(thead, tbody) td {
+  grid-template-columns: repeat(6, 1fr);
   text-align: center;
 }
 
-td.oos {
+.card.detail .row.oos-x,
+.card.detail .row.oos-y {
   background: var(--color-danger-background);
 }
