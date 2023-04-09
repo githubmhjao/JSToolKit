@@ -4,43 +4,73 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
   <title>Overlay Viewer</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <div class="wrapper load">
-      <div class="intro-box">
-        <div class="intro">1</div>
-        <h1>Load File</h1>
+    <div class="card input">
+      <h1>Input File</h1>
+      <div class="input">
+        <label for="input-file">File</label>
+        <input type="file" name="input-file" id="input-file">
+        <input type="text" id="pseudo-input-file" disabled>
       </div>
-      <h2>File Name: <span id="file-name">none</span></h2>
-      <input type="file" id="input-file">
-      <button>Load File</button>
+      <div class="input">
+        <label for="select-wafer">Wafer</label>
+        <select name="select-wafer" id="select-wafer"></select>
+      </div>
+      <div class="input">
+        <label for="select-show">Show</label>
+        <select name="select-show" id="select-show" multiple></select>
+      </div>
+      <div class="input">
+        <label for="select-label-x">Lable X</label>
+        <select name="select-label-x" id="select-label-x"></select>
+      </div>
+      <div class="input">
+        <label for="input-spec-x">Spec X</label>
+        <input type="text" name="input-spec-x" id="input-spec-x">
+      </div>
+      <div class="input">
+        <label for="select-label-y">Label Y</label>
+        <select name="select-label-y" id="select-label-y"></select>
+      </div>
+      <div class="input">
+        <label for="input-spec-y">Spec Y</label>
+        <input type="text" name="input-spec-y" id="input-spec-y">
+      </div>
     </div>
-    <div class="wrapper wafer-map">
+    <div class="card wafer">
       <h1>Wafer Map</h1>
       <div class="svg-container">
         <svg id="wafer-map" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-          <circle cx="50%" cy="50%" r="48%" style="stroke: #ddd; stroke-width: 1%; fill: none"></circle>
-          <g class="lines" style="stroke-width: 0.5%;"></g>
+          <defs>
+            <marker
+              id="arrow"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="context-fill"/>
+            </marker>
+          </defs>
+          <circle cx="50%" cy="50%" r="45%" style="stroke: #ddd; stroke-width: 0.8%; fill: none"></circle>
+          <g class="lines" style="stroke-width: 0.5%; marker-end: url(#arrow)"></g>
         </svg>
       </div>
-      <div class="intro-box">
-        <div class="intro">2</div>
-        <div class="svg-setting">
-          <div>
-            <label for="wafer-map-scale">Scale</label><input type="text" id="wafer-map-scale">
-          </div>
-        </div>
+      <div class="input">
+        <label for="input-scale">Scale</label>
+        <input type="text" name="input-scale" id="input-scale">
       </div>
-      <button id="btn-wafer-map">Download Image</button>
     </div>
-    <div class="wrapper scatter-map">
-      <h1>Scatter Map</h1>
+    <div class="card bull">
+      <h1>Bull Eye</h1>
       <div class="svg-container">
-        <svg id="scatter-map" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-          <g class="axis" style="stroke: #ddd; stroke-width: 1%">
+        <svg id="bull-eye" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <g class="axis" style="stroke: #ddd; stroke-width: 0.8%">
             <line x1="10%" x2="90%" y1="10%" y2="10%"></line>
             <line x1="10%" x2="90%" y1="50%" y2="50%"></line>
             <line x1="10%" x2="90%" y1="90%" y2="90%"></line>
@@ -53,84 +83,81 @@
           <g class="scatters" style="stroke-width: 0.5%;"></g>
         </svg>
       </div>
-      <div class="intro-box">
-        <div class="intro">3</div>
-        <div class="svg-setting">
-          <div>
-            <label for="scatter-map-range">Range</label><input type="text" id="scatter-map-range">
+      <div class="input">
+        <label for="input-range">Range</label>
+        <input type="text" name="input-range" id="input-range">
+      </div>
+      <div class="input">
+        <label for="input-tick">Tick</label>
+        <input type="text" name="input-tick" id="input-tick">
+      </div>
+    </div>
+    <div class="card oos-x">
+      <h2>OOS X</h2>
+      <div class="card-small">
+        <div class="svg-container-small">
+          <svg>
+            <circle cx="50%" cy="50%" r="35%" style="stroke-width: 19%; fill: none"></circle>
+            <circle id="oos-x" cx="50%" cy="50%" r="35%" style="stroke: #ddd; stroke-width: 20%; fill: none"></circle>
+          </svg>
+        </div>
+        <div>
+          <div class="input-small">
+            <label>Total Count</label>
+            <input type="text" id="total-count-x" disabled>
           </div>
-          <div>
-            <label for="scatter-map-tick">Tick</label><input type="text" id="scatter-map-tick">
+          <div class="input-small">
+            <label>OOS X Count</label>
+            <input type="text" id="oos-count-x" disabled>
+          </div>
+          <div class="input-small">
+            <label>OOS X Rate</label>
+            <input type="text" id="oos-rate-x" disabled>
           </div>
         </div>
       </div>
-      <button id="btn-scatter-map">Download Image</button>
     </div>
-    <div class="wrapper oos-x">
-      <h2>X OOS</h2>
-      <div class="svg-container-small">
-        <svg>
-          <circle cx="50%" cy="50%" r="40%" style="stroke-width: 10%; fill: none"></circle>
-          <circle id="svg-oos-x" cx="50%" cy="50%" r="40%" style="stroke: #ddd; stroke-width: 10%; fill: none"></circle>
-        </svg>
-        <div class="percentage"><span></span></div>
+    <div class="card oos-y">
+      <h2>OOS Y</h2>
+      <div class="card-small">
+        <div class="svg-container-small">
+          <svg>
+            <circle cx="50%" cy="50%" r="35%" style="stroke-width: 19%; fill: none"></circle>
+            <circle id="oos-y" cx="50%" cy="50%" r="35%" style="stroke: #ddd; stroke-width: 20%; fill: none"></circle>
+          </svg>
+        </div>
+        <div>
+          <div class="input-small">
+            <label>Total Count</label>
+            <input type="text" id="total-count-y" disabled>
+          </div>
+          <div class="input-small">
+            <label>OOS Y Count</label>
+            <input type="text" id="oos-count-y" disabled>
+          </div>
+          <div class="input-small">
+            <label>OOS Y Rate</label>
+            <input type="text" id="oos-rate-y" disabled>
+          </div>
+        </div>
       </div>
-      <div class="info" id="oos-x"></div>
     </div>
-    <div class="wrapper oos-y">
-      <h2>Y OOS</h2>
-      <div class="svg-container-small">
-        <svg>
-          <circle cx="50%" cy="50%" r="40%" style="stroke-width: 10%; fill: none"></circle>
-          <circle id="svg-oos-y" cx="50%" cy="50%" r="40%" style="stroke: #ddd; stroke-width: 10%; fill: none"></circle>
-        </svg>
-        <div class="percentage"><span></span></div>
+    <div class="card detail">
+      <h1>Detail Data</h1>
+      <div class="table-title">
+        <div class="row">
+          <div class="col">Wafer Id</div>
+          <div class="col">Location X</div>
+          <div class="col">Location Y</div>
+          <div class="col">Overlay X</div>
+          <div class="col">Overlay Y</div>
+          <div class="col">Label</div>
+        </div>
       </div>
-      <div class="info" id="oos-y"></div>
-    </div>
-    <div class="wrapper data">
-      <h1>Overlay Data</h1>
-      <table>
-        <thead>
-          <tr>
-            <th><div class="intro-box"><div class="intro">4</div></div></th>
-            <th></th>
-            <th></th>
-            <th><div class="intro-box"><div class="intro">5</div></div></th>
-            <th><div class="intro-box"><div class="intro">6</div></div></th>
-          </tr>
-          <tr>
-            <th>Wafer Id</th>
-            <th>Position X</th>
-            <th>Position Y</th>
-            <th>OVL X</th>
-            <th>OVL Y</th>
-          </tr>
-          <tr>
-            <th><select id="wafer-id">
-              <option value="---">---</option>
-            </select></th>
-            <th></th>
-            <th></th>
-            <th><select id="label-x">
-              <option value="---">---</option>
-            </select></th>
-            <th><select id="label-y">
-              <option value="---">---</option>
-            </select></th>
-          </tr>
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th><input type="text" placeholder="SPC X" id="spc-x"></th>
-            <th><input type="text" placeholder="SPC Y" id="spc-y"></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-content"></div>
     </div>
   </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
