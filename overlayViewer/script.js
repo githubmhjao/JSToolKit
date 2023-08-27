@@ -253,7 +253,7 @@ function handleCount() {
     [specY, labelY, "overlayY", "total-count-y", "oos-count-y", "oos-rate-y", "oos-y"]
   ].forEach(([spec, label, overlayKey, totalCount, oosCount, oosRate, svg], _) => {
     if (spec) {
-      const tmpArray = state.dataArray.filter(r => r[columnDefinition["label"]] === label);
+      const tmpArray = state.dataArray.filter(r => r[columnDefinition["waferId"]] === state["waferId"]).filter(r => r[columnDefinition["label"]] === label);
       const oosArray = tmpArray.filter(r => Math.abs(+r[columnDefinition[overlayKey]]) > +spec);
 
       document.getElementById(totalCount).value = tmpArray.length;
