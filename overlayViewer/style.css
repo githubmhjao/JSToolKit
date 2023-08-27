@@ -91,6 +91,7 @@ body {
   background: var(--color-primary);
   padding: 5px;
   border-radius: 0.2rem;
+  text-align: center;
 }
 
 .card div.input input,
